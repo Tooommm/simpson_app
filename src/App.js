@@ -1,29 +1,35 @@
 import "./style/style.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import QuoteCard from "./components/QuoteCard";
+import axios from "axios";
 
-function App() {
-  const [data, setData] = useState([
-    {
-      quote:
-        "These are my only friends...grown-up nerds like Gore Vidal. And even he's kissed more boys than I ever will.",
-      character: "Lisa Simpson",
-      image:
-        "https://cdn.glitch.com/3c3ffadc-3406-4440-bb95-d40ec8fcde72%2FLisaSimpson.png?1497567512083",
-      characterDirection: "Right",
-    },
-  ]);
+const App = () => {
+  const [data, setData] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const { data: response } = await axios.get(
+        "https://simpsons-quotes-api.herokuapp.com/quotes"
+      );
+      console.log(data);
+      setData(response);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="container">
-      <button>New Quote</button>
-      {data.map((quote, index) => (
-        <QuoteCard key={index} {...quote} />
-      ))}
+      <button onClick={() => fetchData()}>New Quote</button>
+      <QuoteCard {...data[0]} />
     </div>
   );
-}
+};
 
 export default App;
